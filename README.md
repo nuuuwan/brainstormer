@@ -9,3 +9,4 @@
   * Cleaned README
   * Initial Files
   * Added Graph and Lint
+  * Basic Format

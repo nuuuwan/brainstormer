@@ -1,27 +1,35 @@
 import { Component } from "react";
 import { Graph } from "react-d3-graph";
 
-export default class BrainGraph extends Component {
-  render() {
-    const data = {
-      nodes: [{ id: "Harry" }, { id: "Sally" }, { id: "Alice" }],
-      links: [
-        { source: "Harry", target: "Sally" },
-        { source: "Harry", target: "Alice" },
-      ],
-    };
+const CONFIG = {
+  nodeHighlightBehavior: true,
+  node: {
+    color: "pink",
+    size: 500,
+    highlightStrokeColor: "red",
+  },
+  link: {
+    highlightColor: "red",
+  },
+};
 
-    const myConfig = {
-      nodeHighlightBehavior: true,
-      node: {
-        color: "lightgreen",
-        size: 120,
-        highlightStrokeColor: "blue",
-      },
-      link: {
-        highlightColor: "lightblue",
-      },
-    };
+
+const INITIAL_DATA = {
+  nodes: [{ id: "Harry" }, { id: "Sally" }, { id: "Alice" }],
+  links: [
+    { source: "Harry", target: "Sally" },
+    { source: "Harry", target: "Alice" },
+  ],
+};
+
+export default class BrainGraph extends Component {
+  constructor(props) {
+    super(props);
+    const data = INITIAL_DATA;
+    this.state = {data};
+  }
+  render() {
+    const {data} = this.state;
 
     const onClickNode = function (nodeId) {
       window.alert(`Clicked node ${nodeId}`);
@@ -35,7 +43,7 @@ export default class BrainGraph extends Component {
       <Graph
         id="graph-id" // id is mandatory
         data={data}
-        config={myConfig}
+        config={CONFIG}
         onClickNode={onClickNode}
         onClickLink={onClickLink}
       />
