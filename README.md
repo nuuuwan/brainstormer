@@ -10,3 +10,4 @@
   * Initial Files
   * Added Graph and Lint
   * Basic Format
+  * Basic Graph
