@@ -40,32 +40,39 @@ function getNewNodeID() {
 export default class BrainGraph extends Component {
   constructor(props) {
     super(props);
-    this.state = {data: null};
+    this.state = { data: null };
   }
 
   addNewNode() {
     const { selectedNodeID } = this.state;
+
     let newData = this.state.data;
     const newNodeID = getNewNodeID();
     newData.nodes.push({
       id: newNodeID,
+      x: 100,
+      x: 100,
     });
     newData.links.push({
       source: selectedNodeID,
       target: newNodeID,
     });
-    this.setStateAndSave({ data: newData });
+
+    let newNodeToLabel = this.state.nodeToLabel;
+    newNodeToLabel[newNodeID] = "New Node";
+    this.setStateAndSave({
+      data: newData,
+      nodeToLabel: newNodeToLabel,
+      selectedNodeID: newNodeID,
+    });
   }
 
   deleteSelectedNode() {
     const { selectedNodeID } = this.state;
     let newData = this.state.data;
-    newData.nodes = newData.nodes.filter(
-      (node) => node.id !== selectedNodeID
-    );
+    newData.nodes = newData.nodes.filter((node) => node.id !== selectedNodeID);
     newData.links = newData.links.filter(
-      (link) =>
-        link.target !== selectedNodeID && link.source !== selectedNodeID
+      (link) => link.target !== selectedNodeID && link.source !== selectedNodeID
     );
     this.setStateAndSave({ data: newData });
   }
@@ -73,16 +80,14 @@ export default class BrainGraph extends Component {
   onKeyDown(e) {
     if (e.key === "Tab") {
       this.addNewNode();
-
-    } else if (e.key === "Backspace") {
+    } else if (e.key === "x" && e.ctrlKey) {
       this.deleteSelectedNode();
-
     }
   }
 
   componentDidMount() {
     const { data, nodeToLabel, selectedNodeID } = getGraphState();
-    this.setState({data, nodeToLabel, selectedNodeID});
+    this.setState({ data, nodeToLabel, selectedNodeID });
     document.addEventListener("keydown", this.onKeyDown.bind(this), false);
   }
 
@@ -111,21 +116,42 @@ export default class BrainGraph extends Component {
   nodeViewGenerator(node) {
     const { nodeToLabel, selectedNodeID } = this.state;
     const nodeID = node.id;
-    const label = nodeToLabel[nodeID] ? nodeToLabel[nodeID] : nodeID;
-    const classNameIfSelected =
-      selectedNodeID === nodeID ? "div-node-selected" : "";
+    const label = nodeToLabel[nodeID];
+
+    let classNameIfSelected = "";
+    let renderedInner = null;
+    if (selectedNodeID === nodeID) {
+      classNameIfSelected = "div-node-selected";
+
+      const onChangeSelectedNodeInput = function (e) {
+        let newNodeToLabel = nodeToLabel;
+        newNodeToLabel[nodeID] = e.target.value;
+        this.setStateAndSave({
+          nodeToLabel: newNodeToLabel,
+        });
+      }.bind(this);
+
+      renderedInner = (
+        <textarea
+          className="textarea"
+          onChange={onChangeSelectedNodeInput}
+          value={label}
+        />
+      );
+    } else {
+      renderedInner = <ReactMarkdown>{label}</ReactMarkdown>;
+    }
+
     return (
-      <div className={"div-node " + classNameIfSelected}>
-        <ReactMarkdown>{label}</ReactMarkdown>
-      </div>
+      <div className={"div-node " + classNameIfSelected}>{renderedInner}</div>
     );
   }
 
   render() {
     if (!this.state.data) {
-      return '...';
+      return "...";
     }
-    const { data, selectedNodeID, nodeToLabel } = this.state;
+    const { data } = this.state;
 
     const config = {
       width: 1600,
@@ -144,10 +170,10 @@ export default class BrainGraph extends Component {
       },
       link: {
         highlightColor: "lightgray",
-        strokeWidth: 1,
+        strokeWidth: 2,
       },
       d3: {
-        gravity: -2000,
+        gravity: -1000,
       },
     };
 
@@ -155,25 +181,8 @@ export default class BrainGraph extends Component {
       this.setStateAndSave({ selectedNodeID: nodeId });
     }.bind(this);
 
-    const onChangeSelectedNodeInput = function (e) {
-      let selectedNodeID = this.state.selectedNodeID;
-      let newNodeToLabel = this.state.nodeToLabel;
-
-      const value = e.target.value;
-
-      newNodeToLabel[selectedNodeID] = value;
-      this.setStateAndSave({
-        nodeToLabel: newNodeToLabel,
-      });
-    }.bind(this);
-
     return (
       <div>
-        <textarea
-          className="textarea"
-          onChange={onChangeSelectedNodeInput}
-          value={nodeToLabel[selectedNodeID]}
-        />
         <Graph
           id="graph-id"
           data={data}

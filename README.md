@@ -15,3 +15,4 @@
   * Update size
   * Added keyboard actions
   * minor
+  * Done
