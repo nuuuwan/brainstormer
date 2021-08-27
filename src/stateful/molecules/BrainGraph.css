@@ -8,9 +8,8 @@
 
 .div-node {
 	position: relative;
-	top: 10px;
+	top: 50px;
 	overflow: scroll;
-	min-height: 40px;
 	margin: 0 auto;
 	padding: 6px;
 	border-radius: 6px;

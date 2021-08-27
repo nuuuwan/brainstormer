@@ -139,7 +139,16 @@ export default class BrainGraph extends Component {
         />
       );
     } else {
-      renderedInner = <ReactMarkdown>{label}</ReactMarkdown>;
+      const lines = label.split('\n');
+      renderedInner = lines.map(
+        function(line) {
+          return (
+            <div>
+              <ReactMarkdown>{line}</ReactMarkdown>
+            </div>
+          )
+        }
+      )
     }
 
     return (
@@ -160,8 +169,8 @@ export default class BrainGraph extends Component {
       node: {
         color: "lightgray",
         size: {
-          height: 900,
-          width: 1600,
+          height: 1800,
+          width: 3200,
         },
 
         highlightStrokeColor: "lightgray",
@@ -174,6 +183,8 @@ export default class BrainGraph extends Component {
       },
       d3: {
         gravity: -1000,
+        linkLength: 50,
+        alphaTarget: 10,
       },
     };
 
