@@ -6,18 +6,22 @@ import "./BrainGraph.css";
 
 const CACHE_KEY_GRAPH_STATE = "brainstormer.graphstate";
 
+function getInitGraphState() {
+  const rootNodeID = getNewNodeID();
+  return {
+    data: {
+      nodes: [{ id: rootNodeID, x: 200, y: 200 }],
+      links: [],
+    },
+    nodeToLabel: { [rootNodeID]: "Root" },
+    selectedNodeID: rootNodeID,
+  };
+}
+
 function getGraphState() {
   const data = window.localStorage.getItem(CACHE_KEY_GRAPH_STATE);
   if (!data) {
-    const rootNodeID = getNewNodeID();
-    return {
-      data: {
-        nodes: [{ id: rootNodeID, x: 200, y: 200 }],
-        links: [],
-      },
-      nodeToLabel: { [rootNodeID]: "Root" },
-      selectedNodeID: rootNodeID,
-    };
+    return getInitGraphState();
   }
   const dataJSON = JSON.parse(data);
   return dataJSON;
@@ -42,6 +46,42 @@ export default class BrainGraph extends Component {
       nodeToLabel,
       selectedNodeID,
     };
+  }
+
+  onKeyDown(e) {
+    console.debug(e);
+    if (e.key === "Tab") {
+      const { selectedNodeID } = this.state;
+      let newData = this.state.data;
+      const newNodeID = getNewNodeID();
+      newData.nodes.push({
+        id: newNodeID,
+      });
+      newData.links.push({
+        source: selectedNodeID,
+        target: newNodeID,
+      });
+      this.setStateAndSave({ data: newData });
+    } else if (e.key === "Backspace") {
+      const { selectedNodeID } = this.state;
+      let newData = this.state.data;
+      newData.nodes = newData.nodes.filter(
+        (node) => node.id !== selectedNodeID
+      );
+      newData.links = newData.links.filter(
+        (link) =>
+          link.target !== selectedNodeID && link.source !== selectedNodeID
+      );
+      this.setStateAndSave({ data: newData });
+    }
+  }
+
+  componentDidMount() {
+    document.addEventListener("keydown", this.onKeyDown.bind(this), false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.onKeyDown.bind(this), false);
   }
 
   save() {
@@ -85,8 +125,8 @@ export default class BrainGraph extends Component {
       node: {
         color: "lightgray",
         size: {
-          height: 675,
-          width: 1200,
+          height: 900,
+          width: 1600,
         },
 
         highlightStrokeColor: "lightgray",
@@ -97,53 +137,42 @@ export default class BrainGraph extends Component {
         highlightColor: "lightgray",
         strokeWidth: 1,
       },
+      d3: {
+        gravity: -2000,
+      },
     };
 
     const onClickNode = function (nodeId) {
       this.setStateAndSave({ selectedNodeID: nodeId });
     }.bind(this);
 
-    const onDoubleClickNode = function (nodeId, node) {
-      let newData = this.state.data;
-      const { x, y } = node;
-      const newNodeID = getNewNodeID();
-      newData.nodes.push({
-        id: newNodeID,
-        x: x + 200,
-        y: y,
-      });
-      newData.links.push({
-        source: nodeId,
-        target: newNodeID,
-      });
-      this.setStateAndSave({ data: newData });
-    }.bind(this);
-
     const onChangeSelectedNodeInput = function (e) {
       let selectedNodeID = this.state.selectedNodeID;
       let newNodeToLabel = this.state.nodeToLabel;
-      newNodeToLabel[selectedNodeID] = e.target.value;
 
+      const value = e.target.value;
+
+      newNodeToLabel[selectedNodeID] = value;
       this.setStateAndSave({
         nodeToLabel: newNodeToLabel,
       });
     }.bind(this);
 
     return (
-      <>
+      <div>
         <textarea
           className="textarea"
-          value={nodeToLabel[selectedNodeID]}
           onChange={onChangeSelectedNodeInput}
+          value={nodeToLabel[selectedNodeID]}
         />
         <Graph
           id="graph-id"
           data={data}
           config={config}
           onClickNode={onClickNode}
-          onDoubleClickNode={onDoubleClickNode}
+          onDoubleClickNode={onClickNode}
         />
-      </>
+      </div>
     );
   }
 }

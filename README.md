@@ -13,3 +13,4 @@
   * Basic Graph
   * Node view cosmetics
   * Update size
+  * Added keyboard actions
