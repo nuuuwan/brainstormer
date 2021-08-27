@@ -3,6 +3,7 @@
 	background: none;
 	outline: none;
 	resize: none;
+	overflow: hidden;
 }
 
 .div-node {
