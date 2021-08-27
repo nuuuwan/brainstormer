@@ -40,43 +40,49 @@ function getNewNodeID() {
 export default class BrainGraph extends Component {
   constructor(props) {
     super(props);
-    const { data, nodeToLabel, selectedNodeID } = getGraphState();
-    this.state = {
-      data,
-      nodeToLabel,
-      selectedNodeID,
-    };
+    this.state = {data: null};
+  }
+
+  addNewNode() {
+    const { selectedNodeID } = this.state;
+    let newData = this.state.data;
+    const newNodeID = getNewNodeID();
+    newData.nodes.push({
+      id: newNodeID,
+    });
+    newData.links.push({
+      source: selectedNodeID,
+      target: newNodeID,
+    });
+    this.setStateAndSave({ data: newData });
+  }
+
+  deleteSelectedNode() {
+    const { selectedNodeID } = this.state;
+    let newData = this.state.data;
+    newData.nodes = newData.nodes.filter(
+      (node) => node.id !== selectedNodeID
+    );
+    newData.links = newData.links.filter(
+      (link) =>
+        link.target !== selectedNodeID && link.source !== selectedNodeID
+    );
+    this.setStateAndSave({ data: newData });
   }
 
   onKeyDown(e) {
-    console.debug(e);
     if (e.key === "Tab") {
-      const { selectedNodeID } = this.state;
-      let newData = this.state.data;
-      const newNodeID = getNewNodeID();
-      newData.nodes.push({
-        id: newNodeID,
-      });
-      newData.links.push({
-        source: selectedNodeID,
-        target: newNodeID,
-      });
-      this.setStateAndSave({ data: newData });
+      this.addNewNode();
+
     } else if (e.key === "Backspace") {
-      const { selectedNodeID } = this.state;
-      let newData = this.state.data;
-      newData.nodes = newData.nodes.filter(
-        (node) => node.id !== selectedNodeID
-      );
-      newData.links = newData.links.filter(
-        (link) =>
-          link.target !== selectedNodeID && link.source !== selectedNodeID
-      );
-      this.setStateAndSave({ data: newData });
+      this.deleteSelectedNode();
+
     }
   }
 
   componentDidMount() {
+    const { data, nodeToLabel, selectedNodeID } = getGraphState();
+    this.setState({data, nodeToLabel, selectedNodeID});
     document.addEventListener("keydown", this.onKeyDown.bind(this), false);
   }
 
@@ -116,6 +122,9 @@ export default class BrainGraph extends Component {
   }
 
   render() {
+    if (!this.state.data) {
+      return '...';
+    }
     const { data, selectedNodeID, nodeToLabel } = this.state;
 
     const config = {
