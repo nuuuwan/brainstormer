@@ -1,3 +1,31 @@
-.div-node {
 
+.textarea {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border: none;
+  background: #f8f8f8;
+  resize: none;
+  opacity: 0.5px;
+  border-radius: 12px;
+  padding: 12px;
+  height: 90px;
+  width: 160px;
+}
+
+.div-node {
+  top: 10px;
+   margin: 0 auto;
+   position: relative;
+  text-align: center;
+  background: white;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 9px;
+  overflow: scroll;
+  min-height: 40px;
+}
+
+.div-node-selected {
+  background: #ff8080;
 }
