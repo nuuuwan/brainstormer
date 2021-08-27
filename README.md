@@ -12,3 +12,4 @@
   * Basic Format
   * Basic Graph
   * Node view cosmetics
+  * Update size

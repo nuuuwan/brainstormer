@@ -1,31 +1,30 @@
-
 .textarea {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  border: none;
-  background: #f8f8f8;
-  resize: none;
-  opacity: 0.5px;
-  border-radius: 12px;
-  padding: 12px;
-  height: 90px;
-  width: 160px;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	width: 160px;
+	height: 90px;
+	padding: 12px;
+	border: none;
+	border-radius: 12px;
+	background: #f8f8f8;
+	opacity: 0.5px;
+	resize: none;
 }
 
 .div-node {
-  top: 10px;
-   margin: 0 auto;
-   position: relative;
-  text-align: center;
-  background: white;
-  padding: 6px;
-  border-radius: 6px;
-  font-size: 9px;
-  overflow: scroll;
-  min-height: 40px;
+	position: relative;
+	top: 10px;
+	overflow: scroll;
+	min-height: 40px;
+	margin: 0 auto;
+	padding: 6px;
+	border-radius: 6px;
+	background: white;
+	font-size: 9px;
+	text-align: center;
 }
 
 .div-node-selected {
-  background: #ff8080;
+	background: #ff8080;
 }
